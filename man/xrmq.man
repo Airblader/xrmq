@@ -1,0 +1,19 @@
+xrmq(1)
+==========
+Ingo Bürk <ingo.buerk@airblader.de>
+
+== NAME
+
+xrmq - Test utility for querying the X resource database.
+
+== SYNOPSIS
+
+xrmq [-h|--help] [-v|--version]
+
+== OPTIONS
+
+-h|--help::
+Display the usage and exit.
+
+-v|--version::
+Display the version and exit.
