@@ -1,5 +1,5 @@
 xrmq(1)
-==========
+=======
 Ingo Bürk <ingo.buerk@airblader.de>
 
 == NAME
@@ -8,9 +8,15 @@ xrmq - Test utility for querying the X resource database.
 
 == SYNOPSIS
 
-xrmq [-h|--help] [-v|--version]
+xrmq [-n|--name <name>] [-c|--class <class>] [-h|--help] [-v|--version]
 
 == OPTIONS
+
+-n|--name::
+The fully qualified name string to query.
+
+-c|--class::
+The fully qualified class string to query.
 
 -h|--help::
 Display the usage and exit.

@@ -6,3 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <err.h>
+
+#include <xcb/xcb.h>
+#include <xcb/xcb_aux.h>
+#include <xcb/xcb_xrm.h>
