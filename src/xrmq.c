@@ -52,8 +52,7 @@ int main(int argc, char *argv[]) {
     }
 
     xcb_xrm_resource_t *resource;
-    const char *type;
-    if (xcb_xrm_resource_get(ctx, res_name, res_class, &type, &resource) < 0) {
+    if (xcb_xrm_resource_get(ctx, res_name, res_class, &resource) < 0) {
         exit(EXIT_FAILURE);
     }
 
