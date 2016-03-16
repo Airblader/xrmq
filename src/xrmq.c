@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(stdout, "%s\n", resource->value);
+    fprintf(stdout, "%s\n", xcb_xrm_resource_value(resource));
     xcb_xrm_resource_free(resource);
     exit(EXIT_SUCCESS);
 }
