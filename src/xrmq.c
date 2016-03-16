@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    if (xcb_xrm_database_load(ctx) < 0) {
+    if (xcb_xrm_database_from_resource_manager(ctx) < 0) {
         fprintf(stderr, "Failed to load resource database.\n");
         exit(EXIT_FAILURE);
     }
