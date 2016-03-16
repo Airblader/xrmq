@@ -17,6 +17,7 @@ xcb_xrm_context_t *ctx;
 
 char *res_name;
 char *res_class;
+int use_int = 0;
 
 int main(int argc, char *argv[]) {
     atexit(at_exit_cb);
@@ -56,7 +57,12 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    fprintf(stdout, "%s\n", xcb_xrm_resource_value(resource));
+    if (use_int) {
+        fprintf(stdout, "%d\n", xcb_xrm_resource_value_int(resource));
+    } else {
+        fprintf(stdout, "%s\n", xcb_xrm_resource_value(resource));
+    }
+
     xcb_xrm_resource_free(resource);
     exit(EXIT_SUCCESS);
 }
@@ -83,7 +89,7 @@ static void parse_args(int argc, char *argv[]) {
         { 0, 0, 0, 0}
     };
 
-    while ((c = getopt_long(argc, argv, "n:c:vh", long_options, &opt_index)) != -1) {
+    while ((c = getopt_long(argc, argv, "n:c:ivh", long_options, &opt_index)) != -1) {
         switch (c) {
             case 0:
                 /* Example for a long-named option.
@@ -99,6 +105,9 @@ static void parse_args(int argc, char *argv[]) {
                 break;
             case 'c':
                 res_class = strdup(optarg);
+                break;
+            case 'i':
+                use_int = 1;
                 break;
             case 'v':
                 fprintf(stderr, "xrmq version %s\n", __VERSION);

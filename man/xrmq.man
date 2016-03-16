@@ -8,7 +8,7 @@ xrmq - Test utility for querying the X resource database.
 
 == SYNOPSIS
 
-xrmq [-n|--name <name>] [-c|--class <class>] [-h|--help] [-v|--version]
+xrmq [-n|--name <name>] [-c|--class <class>] [-i] [-h|--help] [-v|--version]
 
 == OPTIONS
 
@@ -17,6 +17,9 @@ The fully qualified name string to query.
 
 -c|--class::
 The fully qualified class string to query.
+
+-i::
+Convert the output to an integer.
 
 -h|--help::
 Display the usage and exit.
