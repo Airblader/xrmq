@@ -11,6 +11,7 @@ static void at_exit_cb(void);
 static void parse_args(int argc, char *argv[]);
 static void print_usage(void);
 
+Display *display;
 xcb_connection_t *conn;
 xcb_screen_t *screen;
 xcb_xrm_context_t *ctx;
@@ -18,6 +19,50 @@ xcb_xrm_context_t *ctx;
 char *res_name;
 char *res_class;
 int use_int = 0;
+
+void get_xcb(void) {
+    if (xcb_xrm_context_new(conn, screen, &ctx) < 0) {
+        fprintf(stderr, "Failed to initialize xcb-xrm context.\n");
+        return;
+    }
+
+    if (xcb_xrm_database_from_resource_manager(ctx) < 0) {
+        fprintf(stderr, "Failed to load resource database.\n");
+        return;
+    }
+
+    xcb_xrm_resource_t *resource;
+    if (xcb_xrm_resource_get(ctx, res_name, res_class, &resource) < 0) {
+        fprintf(stdout, "xcb-xrm: <nomatch>\n");
+        return;
+    }
+
+    if (use_int) {
+        fprintf(stdout, "xcb-xrm: %d\n", xcb_xrm_resource_value_int(resource));
+    } else {
+        fprintf(stdout, "xcb-xrm: %s\n", xcb_xrm_resource_value(resource));
+    }
+
+    xcb_xrm_resource_free(resource);
+}
+
+void get_xlib(void) {
+    XrmInitialize();
+
+    char *rm = XResourceManagerString(display);
+    XrmDatabase db = XrmGetStringDatabase(rm);
+
+    int res_code;
+    char *res_type;
+    XrmValue res_value;
+    res_code = XrmGetResource(db, res_name, res_class, &res_type, &res_value);
+
+    if (!res_code) {
+        fprintf(stdout, "   xlib: <nomatch>\n");
+    } else {
+        fprintf(stdout, "   xlib: %s\n", (char *)res_value.addr);
+    }
+}
 
 int main(int argc, char *argv[]) {
     atexit(at_exit_cb);
@@ -28,41 +73,23 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    int screennr;
-    conn = xcb_connect(NULL, &screennr);
-    if (conn == NULL || xcb_connection_has_error(conn)) {
+    display = XOpenDisplay(NULL);
+    if (display == NULL) {
         fprintf(stderr, "Failed to connect to X11 server.\n");
         exit(EXIT_FAILURE);
     }
 
-    screen = xcb_aux_get_screen(conn, screennr);
+    conn = XGetXCBConnection(display);
+
+    screen = xcb_aux_get_screen(conn, DefaultScreen(display));
     if (screen == NULL) {
         fprintf(stderr, "Failed to get screen.\n");
         exit(EXIT_FAILURE);
     }
 
-    if (xcb_xrm_context_new(conn, screen, &ctx) < 0) {
-        fprintf(stderr, "Failed to initialize xcb-xrm context.\n");
-        exit(EXIT_FAILURE);
-    }
+    get_xcb();
+    get_xlib();
 
-    if (xcb_xrm_database_from_resource_manager(ctx) < 0) {
-        fprintf(stderr, "Failed to load resource database.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    xcb_xrm_resource_t *resource;
-    if (xcb_xrm_resource_get(ctx, res_name, res_class, &resource) < 0) {
-        exit(EXIT_FAILURE);
-    }
-
-    if (use_int) {
-        fprintf(stdout, "%d\n", xcb_xrm_resource_value_int(resource));
-    } else {
-        fprintf(stdout, "%s\n", xcb_xrm_resource_value(resource));
-    }
-
-    xcb_xrm_resource_free(resource);
     exit(EXIT_SUCCESS);
 }
 
