@@ -14,25 +14,20 @@ static void print_usage(void);
 Display *display;
 xcb_connection_t *conn;
 xcb_screen_t *screen;
-xcb_xrm_context_t *ctx;
 
 char *res_name;
 char *res_class;
 int use_int = 0;
 
 void get_xcb(void) {
-    if (xcb_xrm_context_new(conn, screen, &ctx) < 0) {
-        fprintf(stderr, "Failed to initialize xcb-xrm context.\n");
-        return;
-    }
-
-    if (xcb_xrm_database_from_resource_manager(ctx) < 0) {
+    xcb_xrm_database_t *database = xcb_xrm_database_from_resource_manager(conn, screen);
+    if (database == NULL) {
         fprintf(stderr, "Failed to load resource database.\n");
         return;
     }
 
     xcb_xrm_resource_t *resource;
-    if (xcb_xrm_resource_get(ctx, res_name, res_class, &resource) < 0) {
+    if (xcb_xrm_resource_get(database, res_name, res_class, &resource) < 0) {
         fprintf(stdout, "xcb-xrm: <nomatch>\n");
         return;
     }
@@ -44,6 +39,7 @@ void get_xcb(void) {
     }
 
     xcb_xrm_resource_free(resource);
+    xcb_xrm_database_free(database);
 }
 
 void get_xlib(void) {
@@ -96,9 +92,6 @@ int main(int argc, char *argv[]) {
 static void at_exit_cb(void) {
     FREE(res_name);
     FREE(res_class);
-
-    if (ctx != NULL)
-        xcb_xrm_context_free(ctx);
 
     if (conn != NULL)
         xcb_disconnect(conn);

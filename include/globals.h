@@ -4,4 +4,3 @@
 extern Display *display;
 extern xcb_connection_t *conn;
 extern xcb_screen_t *screen;
-extern xcb_xrm_context_t *ctx;
